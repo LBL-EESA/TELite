@@ -47,7 +47,7 @@ VariableRegistry::VariableRegistry() {}
 ///////////////////////////////////////////////////////////////////////////////
 
 VariableRegistry::~VariableRegistry() {
-	for (int v = 0; v < m_vecVariables.size(); v++) {
+	for (size_t v = 0; v < m_vecVariables.size(); v++) {
 		delete m_vecVariables[v];
 	}
 }
@@ -58,7 +58,7 @@ void VariableRegistry::InsertUniqueOrDelete(
 	Variable * pvar,
 	VariableIndex * pvarix
 ) {
-	for (int v = 0; v < m_vecVariables.size(); v++) {
+	for (size_t v = 0; v < m_vecVariables.size(); v++) {
 		if (*pvar == *(m_vecVariables[v])) {
 			delete pvar;
 			if (pvarix != NULL) {
@@ -99,7 +99,7 @@ int VariableRegistry::FindOrRegisterSubStr(
 		}
 	}
 
-	for (int n = 0; n <= strIn.length(); n++) {
+	for (size_t n = 0; n <= strIn.length(); n++) {
 
 		// Reading the variable name
 		if (!fDimMode) {
@@ -271,7 +271,7 @@ int VariableRegistry::FindOrRegisterSubStr(
 Variable & VariableRegistry::Get(
 	VariableIndex varix
 ) {
-	if ((varix < 0) || (varix >= m_vecVariables.size())) {
+	if ((varix < 0) || (size_t(varix) >= m_vecVariables.size())) {
 		_EXCEPTION1("Variable index (%i) out of range", varix);
 	}
 	return *(m_vecVariables[varix]);
@@ -282,7 +282,7 @@ Variable & VariableRegistry::Get(
 std::string VariableRegistry::GetVariableString(
 	VariableIndex varix
 ) const {
-	if ((varix < 0) || (varix >= m_vecVariables.size())) {
+	if ((varix < 0) || (size_t(varix) >= m_vecVariables.size())) {
 		_EXCEPTION1("Variable index (%i) out of range", varix);
 	}
 	return m_vecVariables[varix]->ToString(*this);
@@ -306,7 +306,7 @@ bool Variable::operator==(
 	}
 	_ASSERT(m_strArg.size() == m_varArg.size());
 	_ASSERT(m_strArg.size() == var.m_varArg.size());
-	for (int i = 0; i < m_strArg.size(); i++) {
+	for (size_t i = 0; i < m_strArg.size(); i++) {
 		if (m_strArg[i] != var.m_strArg[i]) {
 			return false;
 		}
@@ -323,7 +323,6 @@ std::string Variable::ToString(
 	const VariableRegistry & varreg
 ) const {
 	_ASSERT(m_varArg.size() == m_strArg.size());
-	char szBuffer[20];
 	std::string strOut = m_strName;
 	if (m_varArg.size() != 0) {
 		strOut += "(";

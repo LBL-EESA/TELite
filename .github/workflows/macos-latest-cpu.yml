@@ -1,0 +1,22 @@
+name: macos-latest-cpu
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build_and_test_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: build_cpu
+        run: |
+          mkdir build_cpu
+          cd build_cpu
+          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=`pwd`/../../TELite-install-cpu ..
+          make -j2 install
+          cd ..

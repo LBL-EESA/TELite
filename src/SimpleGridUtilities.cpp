@@ -111,7 +111,7 @@ void FindLocalMinMax(
 		}
 
 		// Add all neighbors of this point
-		for (int n = 0; n < grid.m_vecConnectivity[ix].size(); n++) {
+		for (size_t n = 0; n < grid.m_vecConnectivity[ix].size(); n++) {
 			queueNodes.push(grid.m_vecConnectivity[ix][n]);
 		}
 	}
@@ -184,7 +184,7 @@ void FindAllLocalMinMaxWithThreshold(
 	std::set<int> & setMinima
 ) {
 	ThresholdOp::Operation opThreshold = ThresholdOp::NoThreshold;
-	real dThresholdValue;
+	real dThresholdValue = 0.0;
 
 	if (strThreshold.length() != 0) {
 		if (strThreshold.length() < 2) {
@@ -361,7 +361,7 @@ void FindLocalAverage(
 		nCount++;
 
 		// Add all neighbors of this point
-		for (int n = 0; n < grid.m_vecConnectivity[ix].size(); n++) {
+		for (size_t n = 0; n < grid.m_vecConnectivity[ix].size(); n++) {
 			queueNodes.push(grid.m_vecConnectivity[ix][n]);
 		}
 	}
@@ -381,7 +381,7 @@ void FindMaxClosedContourDelta(
 	bool fMaxClosedContourDeltaSign,
 	real & dMaxClosedContourDelta
 ) {
-	_ASSERT((ix0 >= 0) && (ix0 < grid.GetSize()));
+	_ASSERT((ix0 >= 0) && (size_t(ix0) < grid.GetSize()));
 
 	// Verify that dDistDeg is less than 180.0
 	if ((dDistDeg <= 0.0) || (dDistDeg > 180.0)) {
@@ -443,7 +443,7 @@ void FindMaxClosedContourDelta(
 
 	// Queue of nodes that remain to be visited
 	std::queue<int> queueNodes;
-	for (int n = 0; n < grid.m_vecConnectivity[ix0].size(); n++) {
+	for (size_t n = 0; n < grid.m_vecConnectivity[ix0].size(); n++) {
 		queueNodes.push(grid.m_vecConnectivity[ix0][n]);
 	}
 
@@ -457,7 +457,7 @@ void FindMaxClosedContourDelta(
 		const double dDelta = iter->first;
 		const int ix = iter->second;
 
-		if ((ix < 0) || (ix >= grid.m_vecConnectivity.size())) {
+		if ((ix < 0) || (size_t(ix) >= grid.m_vecConnectivity.size())) {
 			_EXCEPTION2("Out of range index in connectivity matrix (%i/%i)",
 				ix, grid.m_vecConnectivity.size());
 		}
@@ -467,7 +467,7 @@ void FindMaxClosedContourDelta(
 		setNodesVisited.insert(ix);
 
 		// Add all neighbors of this point
-		for (int n = 0; n < grid.m_vecConnectivity[ix].size(); n++) {
+		for (size_t n = 0; n < grid.m_vecConnectivity[ix].size(); n++) {
 			int ixNeighbor = grid.m_vecConnectivity[ix][n];
 			if (setNodesVisited.find(ixNeighbor) != setNodesVisited.end()) {
 				continue;

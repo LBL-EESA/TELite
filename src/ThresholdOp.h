@@ -74,7 +74,7 @@ public:
 		int iLast = varreg.FindOrRegisterSubStr(strOp, &m_varix) + 1;
 
 		// Loop through string
-		for (int i = iLast; i <= strOp.length(); i++) {
+		for (size_t i = iLast; i <= strOp.length(); i++) {
 
 			// Comma-delineated
 			if ((i == strOp.length()) || (strOp[i] == ',')) {
