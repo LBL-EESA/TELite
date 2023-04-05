@@ -36,4 +36,8 @@ endif()
 
 add_subdirectory(src)
 
-target_link_libraries(TELite)
+configure_file(TELiteConfig.cmake.in
+  ${CMAKE_BINARY_DIR}/${LIB_PREFIX}/TELiteConfig.cmake @ONLY)
+
+install(FILES ${CMAKE_BINARY_DIR}/${LIB_PREFIX}/TELiteConfig.cmake
+  DESTINATION ${LIB_PREFIX})
