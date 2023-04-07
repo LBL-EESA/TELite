@@ -133,10 +133,10 @@ void SimpleGrid::GenerateRectilinearConnectivity(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
+template<typename real>
 void SimpleGrid::GenerateLatitudeLongitude(
-	const DataArray1D<double> & vecLat,
-	const DataArray1D<double> & vecLon,
+	const DataArray1D<real> & vecLat,
+	const DataArray1D<real> & vecLon,
 	bool fRegional,
 	bool fDiagonalConnectivity,
 	bool fVerbose
@@ -302,3 +302,22 @@ void SimpleGrid::GenerateLatitudeLongitude(
 	}
 
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Explicit template instantiation
+
+template void SimpleGrid::GenerateLatitudeLongitude<float>(
+	const DataArray1D<float> & vecLat,
+	const DataArray1D<float> & vecLon,
+	bool fRegional,
+	bool fDiagonalConnectivity,
+	bool fVerbose
+);
+
+template void SimpleGrid::GenerateLatitudeLongitude<double>(
+	const DataArray1D<double> & vecLat,
+	const DataArray1D<double> & vecLon,
+	bool fRegional,
+	bool fDiagonalConnectivity,
+	bool fVerbose
+);

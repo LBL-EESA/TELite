@@ -272,7 +272,7 @@ void ApplyNodeOutputOp(
 
 	// Return values from the output operators
 	int ixExtremum;
-	float dValue;
+	real dValue;
 	float dRMax;
 
 	// Value of the minimum or maximum value within given range
@@ -297,7 +297,7 @@ void ApplyNodeOutputOp(
 		(op.m_eOp == NodeOutputOp::MaxDist) ||
 		(op.m_eOp == NodeOutputOp::MinDist)
 	) {
-		FindLocalMinMax<float>(
+		FindLocalMinMax<real>(
 			grid,
 			(op.m_eOp == NodeOutputOp::MinDist),
 			dataState,
@@ -315,7 +315,7 @@ void ApplyNodeOutputOp(
 		(op.m_eOp == NodeOutputOp::MaxCoordinate) ||
 		(op.m_eOp == NodeOutputOp::MinCoordinate)
 	) {
-		FindLocalMinMax<float>(
+		FindLocalMinMax<real>(
 			grid,
 			(op.m_eOp == NodeOutputOp::MinCoordinate),
 			dataState,
@@ -344,7 +344,7 @@ void ApplyNodeOutputOp(
 		(op.m_eOp == NodeOutputOp::MaxIndex) ||
 		(op.m_eOp == NodeOutputOp::MinIndex)
 	) {
-		FindLocalMinMax<float>(
+		FindLocalMinMax<real>(
 			grid,
 			(op.m_eOp == NodeOutputOp::MinIndex),
 			dataState,
@@ -359,7 +359,7 @@ void ApplyNodeOutputOp(
 
 	// Average of the field over a given distance
 	} else if (op.m_eOp == NodeOutputOp::Avg) {
-		FindLocalAverage<float>(
+		FindLocalAverage<real>(
 			grid,
 			dataState,
 			ixCandidate,
@@ -371,7 +371,7 @@ void ApplyNodeOutputOp(
 
 	// Positive closed contour deltas (valleys)
 	} else if (op.m_eOp == NodeOutputOp::PosClosedContour) {
-		FindMaxClosedContourDelta<float>(
+		FindMaxClosedContourDelta<real>(
 			grid,
 			dataState,
 			ixCandidate,
@@ -385,7 +385,7 @@ void ApplyNodeOutputOp(
 
 	// Negative closed contour deltas (hills)
 	} else if (op.m_eOp == NodeOutputOp::NegClosedContour) {
-		FindMaxClosedContourDelta<float>(
+		FindMaxClosedContourDelta<real>(
 			grid,
 			dataState,
 			ixCandidate,

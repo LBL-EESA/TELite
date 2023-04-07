@@ -69,9 +69,10 @@ public:
 	///		Generate the unstructured grid information for a
 	///		longitude-latitude grid.
 	///	</summary>
+	template<typename real>
 	void GenerateLatitudeLongitude(
-		const DataArray1D<double> & vecLat,
-		const DataArray1D<double> & vecLon,
+		const DataArray1D<real> & vecLat,
+		const DataArray1D<real> & vecLon,
 		bool fRegional,
 		bool fDiagonalConnectivity,
 		bool fVerbose
