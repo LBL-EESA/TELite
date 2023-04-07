@@ -22,6 +22,8 @@
 ///   ToFile, FromUnstructuredDataFile, DimCount, CoordinateVectorToIndex,
 ///   BuildKDTree, NearestNode, NearestNodes)
 ///   and m_kdtree and c_szFileIdentifier variables.
+///   Changed the arguments of the GenerateLatitudeLongitude function from
+///   double to real and included the explicit template instantiation.
 
 #include "SimpleGrid.h"
 #include "CoordTransforms.h"

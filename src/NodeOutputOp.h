@@ -18,6 +18,8 @@
 ///   March 28, 2023
 ///   Changed the arguments of the ApplyNodeOutputOp function
 ///   to load data outside the function.
+///   Changed 'FindLocalAverage<float>' to 'FindLocalAverage<real>' and
+///   'float dValue;' to 'real dValue;' in the ApplyNodeOutputOp function.
 
 #ifndef _NODEOUTPUTOP_H_
 #define _NODEOUTPUTOP_H_

@@ -22,6 +22,8 @@
 ///   ToFile, FromUnstructuredDataFile, DimCount, CoordinateVectorToIndex,
 ///   BuildKDTree, NearestNode, NearestNodes)
 ///   and m_kdtree and c_szFileIdentifier variables.
+///   Changed the arguments of the GenerateLatitudeLongitude function from
+///   double to real.
 
 #ifndef _SIMPLEGRID_H_
 #define _SIMPLEGRID_H_
