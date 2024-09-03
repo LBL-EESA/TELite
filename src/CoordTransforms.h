@@ -19,10 +19,9 @@
 ///   Removed some functions (StereographicProjectionInv,
 ///   StereographicProjection, GreatCircleDistanceXYZ_Deg,
 ///   GreatCircleDistanceXYZ_Rad, VecTransRLL2DtoXYZ_Rad,
-///   XYZtoRLL_Rad, XYZtoRLL_Deg, RLLtoXYZ_Deg, RLLtoXYZ_Rad,
+///   XYZtoRLL_Rad, XYZtoRLL_Deg, RLLtoXYZ_Deg,
 ///   GreatCircleDistanceFromChordLength_Rad,
-///   ChordLengthFromGreatCircleDistance_Deg, LonRadToStandardRange,
-///   LonDegToStandardRange, DegToRad)
+///   LonRadToStandardRange, LonDegToStandardRange)
 
 #ifndef _COORDTRANSFORMS_H_
 #define _COORDTRANSFORMS_H_
@@ -33,6 +32,8 @@
 
 #include "Exception.h"
 
+static const double HighTolerance = 1.0e-10;
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ///	<summary>
@@ -42,6 +43,50 @@ inline double RadToDeg(
 	double dRad
 ) {
 	return (dRad * 180.0 / M_PI);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+///	<summary>
+///		Convert degrees to radians.
+///	</summary>
+inline double DegToRad(
+	double dDeg
+) {
+	return (dDeg * M_PI / 180.0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+///	<summary>
+///		Calculate the chord length from the great circle distance (in degrees).
+///	</summary>
+inline double ChordLengthFromGreatCircleDistance_Deg(
+	double dGCDDeg
+) {
+	return 2.0 * sin(0.5 * DegToRad(dGCDDeg));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+///	<summary>
+///		Calculate 3D Cartesian coordinates from latitude and longitude,
+///		in radians.
+///	</summary>
+inline void RLLtoXYZ_Rad(
+	double dLonRad,
+	double dLatRad,
+	double & dX,
+	double & dY,
+	double & dZ
+) {
+	if (fabs(dLatRad) > 0.5 * M_PI + HighTolerance) {
+		_EXCEPTION1("Latitude out of range (%2.14f)", dLatRad);
+	}
+
+	dX = cos(dLonRad) * cos(dLatRad);
+	dY = sin(dLonRad) * cos(dLatRad);
+	dZ = sin(dLatRad);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

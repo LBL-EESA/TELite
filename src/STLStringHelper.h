@@ -17,7 +17,7 @@
 ///   Amanda Dufek
 ///   March 28, 2023
 ///   Removed some functions (ConcatenateStringVector, ParseVariableList,
-///   RemoveWhitespaceInPlace, IsInteger, IsIntegerIndex, ToUpper, ToLower)
+///   RemoveWhitespaceInPlace, IsInteger, ToUpper)
 
 #ifndef _STLSTRINGHELPER_H_
 #define _STLSTRINGHELPER_H_
@@ -36,6 +36,28 @@ private:
 STLStringHelper() { }
 
 public:
+
+///////////////////////////////////////////////////////////////////////////////
+
+inline static void ToLower(std::string &str) {
+	for(size_t i = 0; i < str.length(); i++) {
+		str[i] = tolower(str[i]);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+inline static bool IsIntegerIndex(const std::string &str) {
+	if (str.length() == 0) {
+		return false;
+	}
+	for(size_t i = 0; i < str.length(); i++) {
+		if ((str[i] < '0') || (str[i] > '9')) {
+			return false;
+		}
+	}
+	return true;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -27,7 +27,7 @@ OF SUCH DAMAGE.
 Amanda Dufek
 March 28, 2023
 Removed some functions (kd_data_destructor, kd_insert, kd_insertf,
-kd_insert3f, kd_nearest, kd_nearestf, kd_nearest3, kd_nearest3f,
+kd_insert3f, kd_nearestf, kd_nearest3f,
 kd_nearest_n, kd_nearest_nf, kd_nearest_n3, kd_nearest_n3f,
 kd_nearest_range, kd_nearest_rangef, kd_nearest_range3f, kd_res_end,
 kd_res_itemf, kd_res_item3, kd_res_item3f)
@@ -99,7 +99,9 @@ static void clear_results(struct kdres *set);
 
 static struct kdhyperrect* hyperrect_create(int dim, const double *min, const double *max);
 static void hyperrect_free(struct kdhyperrect *rect);
+static struct kdhyperrect* hyperrect_duplicate(const struct kdhyperrect *rect);
 static void hyperrect_extend(struct kdhyperrect *rect, const double *pos);
+static double hyperrect_dist_sq(struct kdhyperrect *rect, const double *pos);
 
 #ifdef USE_LIST_NODE_ALLOCATOR
 static struct res_node *alloc_resnode(void);
@@ -244,6 +246,129 @@ static int find_nearest(struct kdnode *node, const double *pos, double range, st
 	return added_res;
 }
 
+static void kd_nearest_i(struct kdnode *node, const double *pos, struct kdnode **result, double *result_dist_sq, struct kdhyperrect* rect)
+{
+	int dir = node->dir;
+	int i;
+	double dummy, dist_sq;
+	struct kdnode *nearer_subtree, *farther_subtree;
+	double *nearer_hyperrect_coord, *farther_hyperrect_coord;
+
+	/* Decide whether to go left or right in the tree */
+	dummy = pos[dir] - node->pos[dir];
+	if (dummy <= 0) {
+		nearer_subtree = node->left;
+		farther_subtree = node->right;
+		nearer_hyperrect_coord = rect->max + dir;
+		farther_hyperrect_coord = rect->min + dir;
+	} else {
+		nearer_subtree = node->right;
+		farther_subtree = node->left;
+		nearer_hyperrect_coord = rect->min + dir;
+		farther_hyperrect_coord = rect->max + dir;
+	}
+
+	if (nearer_subtree) {
+		/* Slice the hyperrect to get the hyperrect of the nearer subtree */
+		dummy = *nearer_hyperrect_coord;
+		*nearer_hyperrect_coord = node->pos[dir];
+		/* Recurse down into nearer subtree */
+		kd_nearest_i(nearer_subtree, pos, result, result_dist_sq, rect);
+		/* Undo the slice */
+		*nearer_hyperrect_coord = dummy;
+	}
+
+	/* Check the distance of the point at the current node, compare it
+	 * with our best so far */
+	dist_sq = 0;
+	for(i=0; i < rect->dim; i++) {
+		dist_sq += SQ(node->pos[i] - pos[i]);
+	}
+	if (dist_sq < *result_dist_sq) {
+		*result = node;
+		*result_dist_sq = dist_sq;
+	}
+
+	if (farther_subtree) {
+		/* Get the hyperrect of the farther subtree */
+		dummy = *farther_hyperrect_coord;
+		*farther_hyperrect_coord = node->pos[dir];
+		/* Check if we have to recurse down by calculating the closest
+		 * point of the hyperrect and see if it's closer than our
+		 * minimum distance in result_dist_sq. */
+		if (hyperrect_dist_sq(rect, pos) < *result_dist_sq) {
+			/* Recurse down into farther subtree */
+			kd_nearest_i(farther_subtree, pos, result, result_dist_sq, rect);
+		}
+		/* Undo the slice on the hyperrect */
+		*farther_hyperrect_coord = dummy;
+	}
+}
+
+struct kdres *kd_nearest(struct kdtree *kd, const double *pos)
+{
+	struct kdhyperrect *rect;
+	struct kdnode *result;
+	struct kdres *rset;
+	double dist_sq;
+	int i;
+
+	if (!kd) return 0;
+	if (!kd->rect) return 0;
+
+	/* Allocate result set */
+	if(!(rset = (struct kdres *)malloc(sizeof *rset))) {
+		return 0;
+	}
+	if(!(rset->rlist = (struct res_node *)alloc_resnode())) {
+		free(rset);
+		return 0;
+	}
+	rset->rlist->next = 0;
+	rset->tree = kd;
+
+	/* Duplicate the bounding hyperrectangle, we will work on the copy */
+	if (!(rect = hyperrect_duplicate(kd->rect))) {
+		kd_res_free(rset);
+		return 0;
+	}
+
+	/* Our first guesstimate is the root node */
+	result = kd->root;
+	dist_sq = 0;
+	for (i = 0; i < kd->dim; i++)
+		dist_sq += SQ(result->pos[i] - pos[i]);
+
+	/* Search for the nearest neighbour recursively */
+	kd_nearest_i(kd->root, pos, &result, &dist_sq, rect);
+
+	/* Free the copy of the hyperrect */
+	hyperrect_free(rect);
+
+	/* Store the result */
+	if (result) {
+		if (rlist_insert(rset->rlist, result, -1.0) == -1) {
+			kd_res_free(rset);
+			return 0;
+		}
+		rset->size = 1;
+		kd_res_rewind(rset);
+		return rset;
+	} else {
+		kd_res_free(rset);
+		return 0;
+	}
+}
+
+struct kdres *kd_nearest3(struct kdtree *tree, double x, double y, double z)
+{
+	double pos[3];
+	pos[0] = x;
+	pos[1] = y;
+	pos[2] = z;
+	return kd_nearest(tree, pos);
+}
+
 struct kdres *kd_nearest_range(struct kdtree *kd, const double *pos, double range)
 {
 	int ret;
@@ -349,6 +474,11 @@ static void hyperrect_free(struct kdhyperrect *rect)
 	free(rect);
 }
 
+static struct kdhyperrect* hyperrect_duplicate(const struct kdhyperrect *rect)
+{
+	return hyperrect_create(rect->dim, rect->min, rect->max);
+}
+
 static void hyperrect_extend(struct kdhyperrect *rect, const double *pos)
 {
 	int i;
@@ -362,6 +492,23 @@ static void hyperrect_extend(struct kdhyperrect *rect, const double *pos)
 		}
 	}
 }
+
+static double hyperrect_dist_sq(struct kdhyperrect *rect, const double *pos)
+{
+	int i;
+	double result = 0;
+
+	for (i=0; i < rect->dim; i++) {
+		if (pos[i] < rect->min[i]) {
+			result += SQ(rect->min[i] - pos[i]);
+		} else if (pos[i] > rect->max[i]) {
+			result += SQ(rect->max[i] - pos[i]);
+		}
+	}
+
+	return result;
+}
+
 
 /* ---- static helpers ---- */
 

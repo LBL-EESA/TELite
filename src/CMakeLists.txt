@@ -1,4 +1,4 @@
-add_library(TELite SimpleGrid.cpp Variable.cpp kdtree.cpp SimpleGridUtilities.cpp Announce.cpp)
+add_library(TELite SimpleGrid.cpp Variable.cpp kdtree.cpp SimpleGridUtilities.cpp Announce.cpp TimeObj.cpp)
 
 file(GLOB_RECURSE FILES_MATCHING "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 install(FILES ${FILES_MATCHING}

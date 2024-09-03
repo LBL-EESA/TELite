@@ -53,6 +53,10 @@ void kd_clear(struct kdtree *tree);
 /* insert a node, specifying its position, and optional data */
 int kd_insert3(struct kdtree *tree, double x, double y, double z, void *data);
 
+/* This function returns a pointer to a result set with at most one element */
+struct kdres *kd_nearest(struct kdtree *tree, const double *pos);
+struct kdres *kd_nearest3(struct kdtree *tree, double x, double y, double z);
+
 /* Find any nearest nodes from a given point within a range.
  *
  * This function returns a pointer to a result set, which can be manipulated
